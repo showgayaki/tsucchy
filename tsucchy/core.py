@@ -37,7 +37,7 @@ def post_line(api_url, access_token, message):
         , 'stickerId': None
     }
     image = None
-    bot.send_message(payload, image)
+    return bot.send_message(payload, image)
 
 
 def main():
@@ -63,18 +63,24 @@ def main():
         last_dict = load_json(json_path)
 
         if last_dict == articles_dict:
-            log.logging('Not Update.')
+            log.logging('Not Updated.')
         else:
             if 'error' in last_dict:
                 message = ('\nローカルのjsonファイルに問題があります。\n'
                            'ログを確認してください。')
                 log.logging(last_dict['error'])
             else:
+                log.logging('Updated.')
                 message = ('\n記事が更新されたかもです。\n'
                            '内容を確認してください。\n\n'
                            '{}').format(config['TARGET_URL'])
 
-            post_line(config['API_URL'], config['ACCESS_TOKEN'], message)
+            result = post_line(config['API_URL'], config['ACCESS_TOKEN'], message)
+            if result == 200:
+                log.logging('Post to LINE Succeeded.')
+            else:
+                log.logging(result)
+
             with open(json_path, 'w') as f:
                 json.dump(articles_dict, f, indent=4, ensure_ascii=False)
     log.logging('Finish.')
