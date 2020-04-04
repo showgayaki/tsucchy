@@ -1,0 +1,5 @@
+.env
+.idea
+tsucchy.json
+tsucchy.log
+__pycache__

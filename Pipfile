@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+requests = "*"
+beautifulsoup4 = "*"
+dotenv = "*"
+python-dotenv = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+tsucchy = "python3 tsucchy/core.py"
