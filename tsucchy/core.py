@@ -1,6 +1,5 @@
 import json
 import os
-import pathlib
 import dotenv
 import article
 import line_notify
@@ -8,7 +7,7 @@ import logger
 
 
 def load_dotenv():
-    dotenv_path = os.path.join(pathlib.Path(__file__).parents[1], '.env')
+    dotenv_path = os.path.join(os.pardir, '.env')
     dotenv.load_dotenv(dotenv_path)
     config_dict = {
         'TARGET_URL': os.environ.get('TARGET_URL')
