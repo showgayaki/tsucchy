@@ -8,7 +8,6 @@ verify_ssl = true
 [packages]
 requests = "*"
 beautifulsoup4 = "*"
-dotenv = "*"
 python-dotenv = "*"
 
 [requires]
