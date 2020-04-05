@@ -30,6 +30,8 @@ class LatestArticles:
                     articles_dict[key] = {}
                     articles_dict[key]['title'] = latest_articles[i].contents[0]
                     articles_dict[key]['link'] = latest_articles[i].attrs['href']
+            else:
+                articles_dict['error'] = 'Status Code:{} From:{}'.format(r.status_code, self.target_url)
         except Exception as e:
             articles_dict['error'] = str(e)
 
