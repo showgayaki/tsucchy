@@ -14,7 +14,7 @@ def load_dotenv(dotenv_path):
         , 'TARGET_ID': os.environ.get('TARGET_ID')
         , 'API_URL': os.environ.get('API_URL')
         , 'ACCESS_TOKEN': os.environ.get('ACCESS_TOKEN')
-        , 'JSON_PATH': os.environ.get('JSON_PATH')
+        , 'JSON_FILE': os.environ.get('JSON_FILE')
     }
     return config_dict
 
@@ -45,44 +45,48 @@ def main():
     dotenv_path = os.path.join(Path(current_path).resolve().parents[0], '.env')
 
     config = load_dotenv(dotenv_path)
-    json_path = os.path.join(current_path, config['JSON_PATH'])
+    json_dir = os.path.join(current_path, 'json')
+    json_path = os.path.join(json_dir, config['JSON_FILE'])
 
     log = logger.Logger(os.path.dirname(__file__), 10)
     log.logging('Start.')
 
+    if not os.path.exists(json_dir):
+        os.makedirs(json_dir)
+        log.logging('Created Directory => [{}]'.format(json_dir))
+
     articles = article.LatestArticles(config['TARGET_URL'], config['TARGET_ID'])
     articles_dict = articles.fetch_latest_articles()
+    last_dict = load_json(json_path)
 
+    message = ''
     if 'error' in articles_dict:
         log.logging(articles_dict['error'])
-    else:
-        json_dir = os.path.join(os.path.dirname(__file__), 'json')
-        if not os.path.exists(json_dir):
-            os.makedirs(json_dir)
-            log.logging('Created Directory => [{}]'.format(json_dir))
-        last_dict = load_json(json_path)
+        message += ('\n最近の投稿を取得できませんでした。\n'
+                    '確認してください。\n')
 
-        if last_dict == articles_dict:
-            log.logging('Not Updated.')
+    if 'error' in last_dict:
+        message += ('\nローカルのjsonファイルに問題があります。\n'
+                    'ログを確認してください。\n')
+        log.logging(last_dict['error'])
+
+    if last_dict == articles_dict:
+        log.logging('Not Updated.')
+    elif message == '':
+        log.logging('Updated.')
+        message = ('\n記事が更新されたかもです。\n'
+                   '内容を確認してください。\n\n'
+                   '{}').format(config['TARGET_URL'])
+        with open(json_path, 'w') as f:
+            json.dump(articles_dict, f, indent=4, ensure_ascii=False)
+
+    if message:
+        post_result = post_line(config['API_URL'], config['ACCESS_TOKEN'], message)
+        if post_result == 200:
+            log.logging('Post to LINE Succeeded.')
         else:
-            if 'error' in last_dict:
-                message = ('\nローカルのjsonファイルに問題があります。\n'
-                           'ログを確認してください。')
-                log.logging(last_dict['error'])
-            else:
-                log.logging('Updated.')
-                message = ('\n記事が更新されたかもです。\n'
-                           '内容を確認してください。\n\n'
-                           '{}').format(config['TARGET_URL'])
+            log.logging(post_result)
 
-            result = post_line(config['API_URL'], config['ACCESS_TOKEN'], message)
-            if result == 200:
-                log.logging('Post to LINE Succeeded.')
-            else:
-                log.logging(result)
-
-            with open(json_path, 'w') as f:
-                json.dump(articles_dict, f, indent=4, ensure_ascii=False)
     log.logging('Finish.')
 
 
