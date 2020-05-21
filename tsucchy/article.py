@@ -20,9 +20,9 @@ class LatestArticles:
     def fetch_latest_articles(self):
         articles_dict = {}
         try:
-            r = requests.get(self.target_url, timeout=(3, 6))
-            if r.status_code == 200:
-                soup = BeautifulSoup(r.content, 'html.parser')
+            res = requests.get(self.target_url, timeout=(3, 6))
+            if res.status_code == 200:
+                soup = BeautifulSoup(res.content, 'html.parser')
                 latest_articles = soup.select('#{} a'.format(self.target_id))
 
                 for i, elem in enumerate(latest_articles):
@@ -31,7 +31,7 @@ class LatestArticles:
                     articles_dict[key]['title'] = elem.contents[0]
                     articles_dict[key]['link'] = elem.attrs['href']
             else:
-                articles_dict['error'] = 'Status Code:{} From:{}'.format(r.status_code, self.target_url)
+                articles_dict['error'] = 'Status Code:{} From:{}'.format(res.status_code, self.target_url)
         except Exception as e:
             articles_dict['error'] = str(e)
 
