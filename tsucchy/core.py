@@ -125,12 +125,12 @@ def main():
 
     msg = message(**vars())
 
-    # if msg:
-    #     post_result = post_line(config['API_URL'], config['ACCESS_TOKEN'], msg)
-    #     if post_result == 200:
-    #         log.logging('Post to LINE Succeeded.')
-    #     else:
-    #         log.logging(post_result)
+    if msg:
+        post_result = post_line(config['API_URL'], config['ACCESS_TOKEN'], msg)
+        if post_result == 200:
+            log.logging('Post to LINE Succeeded.')
+        else:
+            log.logging(post_result)
 
     log.logging('Finish.')
 
