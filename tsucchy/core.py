@@ -67,7 +67,7 @@ def message(**kwargs):
         kwargs['log'].logging(kwargs['videos'])
         video_msg += '\n動画情報の取得に失敗しました。'
 
-    if kwargs['last_dict']['videos'] == kwargs['videos']:
+    if kwargs['last_dict']['videos'].keys() == kwargs['videos'].keys():
         kwargs['log'].logging('Not Updated videos.')
     elif video_msg == '':
         kwargs['log'].logging('Updated videos.')
@@ -125,12 +125,12 @@ def main():
 
     msg = message(**vars())
 
-    if msg:
-        post_result = post_line(config['API_URL'], config['ACCESS_TOKEN'], msg)
-        if post_result == 200:
-            log.logging('Post to LINE Succeeded.')
-        else:
-            log.logging(post_result)
+    # if msg:
+    #     post_result = post_line(config['API_URL'], config['ACCESS_TOKEN'], msg)
+    #     if post_result == 200:
+    #         log.logging('Post to LINE Succeeded.')
+    #     else:
+    #         log.logging(post_result)
 
     log.logging('Finish.')
 
